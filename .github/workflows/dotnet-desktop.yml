@@ -19,8 +19,14 @@ jobs:
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v2
 
-    - name: Restaurar paquetes NuGet
-      run: nuget restore NominaGUI.sln
-
-    - name: Compilar Solucion
-      run: msbuild NominaGUI.sln /p:Configuration=Release
+    - name: Restaurar y Compilar automaticamente
+      shell: pwsh
+      run: |
+        $solucion = Get-ChildItem -Path . -Filter *.sln -Recurse | Select-Object -First 1
+        if ($solucion) {
+            Write-Host "¡Solución encontrada en: $($solucion.FullName)!"
+            nuget restore $solucion.FullName
+            msbuild $solucion.FullName /p:Configuration=Release
+        } else {
+            Write-Error "No se encontró ningún archivo .sln en el repositorio."
+        }
