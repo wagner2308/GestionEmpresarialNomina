@@ -2,7 +2,7 @@ name: Compilacion .NET
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ "main", "feature/*" ]
   pull_request:
     branches: [ "main" ]
 
@@ -16,8 +16,11 @@ jobs:
     - name: Setup MSBuild
       uses: microsoft/setup-msbuild@v2
 
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v2
+
     - name: Restaurar paquetes NuGet
-      run: nuget restore NominaGUI/NominaGUI.sln
+      run: nuget restore NominaGUI.sln
 
     - name: Compilar Solucion
-      run: msbuild NominaGUI/NominaGUI.sln /p:Configuration=Release
+      run: msbuild NominaGUI.sln /p:Configuration=Release
