@@ -1,10 +1,15 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
+using NominaGUI.Clases; 
 
 namespace NominaGUI
 {
     public partial class frmNomina : Form
     {
+        
+        private List<Empleado> historialNominas = new List<Empleado>();
+
         public frmNomina()
         {
             InitializeComponent();
@@ -12,19 +17,52 @@ namespace NominaGUI
 
         private void btnCalcular_Click(object sender, EventArgs e)
         {
-            // Especificación SDD: Cálculo de IESS al 9.45%
-            if (double.TryParse(txtSalario.Text, out double salarioBase))
+  
+            if (string.IsNullOrWhiteSpace(txtNombre.Text))
             {
-                double descuento = salarioBase * 0.0945;
-                double salarioNeto = salarioBase - descuento;
+                MessageBox.Show("Por favor, ingrese el nombre del empleado.", "Atención", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
 
-                lblDescuento.Text = $"Descuento IESS: $ {descuento:0.00}";
-                lblNeto.Text = $"Neto a Recibir: $ {salarioNeto:0.00}";
+       
+            if (double.TryParse(txtSalario.Text, out double salarioBase) &&
+                int.TryParse(txtHorasExtras.Text, out int horasExtras))
+            {
+            
+                Empleado nuevoEmpleado = new Empleado
+                {
+                    Nombre = txtNombre.Text,
+                    SalarioBase = salarioBase,
+                    HorasExtras = horasExtras
+                };
+
+              
+                nuevoEmpleado.CalcularPagos();
+
+                historialNominas.Add(nuevoEmpleado);
+                ActualizarTabla();
+
+                LimpiarCampos();
             }
             else
             {
-                MessageBox.Show("Ingrese un monto válido.");
+                MessageBox.Show("Ingrese valores numéricos válidos en salario y horas extras.", "Error de Formato", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void ActualizarTabla()
+        {
+          
+            dgvHistorial.DataSource = null;
+            dgvHistorial.DataSource = historialNominas;
+        }
+
+        private void LimpiarCampos()
+        {
+            txtNombre.Clear();
+            txtSalario.Clear();
+            txtHorasExtras.Text = "0";
+            txtNombre.Focus(); 
         }
     }
 }
