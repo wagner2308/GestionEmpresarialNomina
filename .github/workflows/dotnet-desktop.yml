@@ -22,11 +22,11 @@ jobs:
     - name: Restaurar y Compilar automaticamente
       shell: pwsh
       run: |
-        $solucion = Get-ChildItem -Path . -Filter *.sln -Recurse | Select-Object -First 1
-        if ($solucion) {
-            Write-Host "¡Solución encontrada en: $($solucion.FullName)!"
-            nuget restore $solucion.FullName
-            msbuild $solucion.FullName /p:Configuration=Release
+        $proyecto = Get-ChildItem -Path . -Filter *.csproj -Recurse | Select-Object -First 1
+        if ($proyecto) {
+            Write-Host "¡Proyecto encontrado en: $($proyecto.FullName)!"
+            nuget restore $proyecto.FullName
+            msbuild $proyecto.FullName /p:Configuration=Release
         } else {
-            Write-Error "No se encontró ningún archivo .sln en el repositorio."
+            Write-Error "Error grave: Tampoco se encontró el archivo .csproj. Visual Studio no subió tu código a GitHub."
         }
